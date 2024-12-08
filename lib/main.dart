@@ -1,3 +1,4 @@
+import 'package:doctordesktop/screens/Admin/AdminAuthDialog.dart';
 import 'package:doctordesktop/screens/AssignDoctor.dart';
 import 'package:doctordesktop/screens/Doctor/fetchDoctor.dart';
 import 'package:doctordesktop/screens/DoctorRegister.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(1920, 1080), // Set screen size for responsive scaling
+      designSize: Size(1920, 1080),
       builder: (context, child) {
         return MaterialApp(
           title: 'Flutter Windows App',
@@ -39,12 +40,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  TabController? _tabController; // Tab controller for TabBar
+  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this); // Number of tabs
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -61,69 +62,172 @@ class _HomeScreenState extends State<HomeScreen>
         title: Text(
           'Spandan Hospital',
           style: TextStyle(
-            color: Colors.white, // Text color for the AppBar title
+            color: Colors.white,
           ),
         ),
         bottom: TabBar(
-          labelColor: Colors.white, // Color for the selected tab text
-          unselectedLabelColor: Colors.grey, // Color for unselected tab tex
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey,
           controller: _tabController,
           tabs: [
             Tab(text: 'Home'),
             Tab(text: 'Screens'),
-            Tab(text: 'Settings'), // Example tab
+            Tab(text: 'Settings'),
           ],
         ),
       ),
+      drawer: _buildDrawer(context),
       body: TabBarView(
         controller: _tabController,
         children: [
-          _homeTab(), // Home tab content
-          _screensTab(), // Screens tab content
-          _settingsTab(), // Settings tab content
+          _homeTab(),
+          _screensTab(),
+          _settingsTab(),
         ],
       ),
     );
   }
 
-  // Home tab content
+  // Drawer widget
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      backgroundColor: Colors.white,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: Colors.blueAccent),
+            child: Text(
+              'Menu',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.person_add),
+            title: Text('Register Doctor'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DoctorRegisterScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.person_add_alt),
+            title: Text('Register Nurse'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NurseRegisterScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.person_add_alt_1),
+            title: Text('Register Patient'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PatientAddScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.list),
+            title: Text('Patient List'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PatientListScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.list_alt),
+            title: Text('Doctor List'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DoctorListScreen()),
+              );
+            },
+          ),
+          // New Screens
+          ListTile(
+            leading: Icon(Icons.assignment_ind),
+            title: Text('Assign Doctor'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AssignDoctorScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.assignment),
+            title: Text('Patient Assignments'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PatientAssignmentScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('Admin'),
+            onTap: () {
+              // Add functionality if needed
+              showDialog(
+                context: context,
+                builder: (context) => AdminAuthDialog(),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.info),
+            title: Text('About'),
+            onTap: () {
+              // Add functionality if needed
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _homeTab() {
     return Stack(
       children: [
-        // Background Image
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/images/span.png'), // Background image
+              image: AssetImage('assets/images/span.png'),
               fit: BoxFit.fill,
             ),
           ),
         ),
-        // Content
         Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Welcome to the Flutter Windows App',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 30.h),
-              // Individual Buttons
+              // Text(
+              //   'Welcome to the Flutter Windows App',
+              //   style: TextStyle(
+              //     color: Colors.white,
+              //     fontSize: 32.sp,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
+              SizedBox(height: 180.h),
               Wrap(
                 spacing: 100.w,
                 runSpacing: 30.h,
                 children: [
-                  Container(
-                    padding: EdgeInsets.only(top: 90, right: 90),
-                  ),
-                  SizedBox(
-                    width: 220,
-                  ),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -155,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen>
                       );
                     },
                     style: _buttonStyle(),
-                    child: Text('Patient  Register', style: _buttonTextStyle()),
+                    child: Text('Patient Register', style: _buttonTextStyle()),
                   ),
                 ],
               ),
@@ -166,12 +270,11 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // Screens tab content with buttons
   Widget _screensTab() {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/span.png'), // Background image
+          image: AssetImage('assets/images/span.png'),
           fit: BoxFit.fill,
         ),
       ),
@@ -180,13 +283,6 @@ class _HomeScreenState extends State<HomeScreen>
           spacing: 30.w,
           runSpacing: 30.h,
           children: [
-            Container(
-              padding: EdgeInsets.only(top: 90, right: 90),
-            ),
-            SizedBox(
-              width: 250,
-            ),
-            // Stylish Buttons with enhanced design
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -228,110 +324,48 @@ class _HomeScreenState extends State<HomeScreen>
               style: _buttonStyle(),
               child: Text('Doctor Patient', style: _buttonTextStyle()),
             ),
-            // Add more buttons as needed for additional screens
           ],
         ),
       ),
     );
   }
 
+  Widget _settingsTab() {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/sp.png'),
+          fit: BoxFit.fill,
+        ),
+      ),
+      child: Center(),
+    );
+  }
+
   ButtonStyle _buttonStyle() {
     return ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
-      backgroundColor: Colors.blueAccent, // Text color
-      elevation: 8, // Shadow effect
+      backgroundColor: Colors.blueAccent,
+      elevation: 8,
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30), // Rounded corners
+        borderRadius: BorderRadius.circular(30),
       ),
-      shadowColor: Colors.blueGrey.withOpacity(0.5), // Shadow color
-      textStyle:
-          TextStyle(fontSize: 16, fontWeight: FontWeight.w600), // Text style
+      shadowColor: Colors.blueGrey.withOpacity(0.5),
+      textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
     ).copyWith(
       side: MaterialStateProperty.all(
-        BorderSide(color: Colors.blueAccent, width: 2), // Border style
+        BorderSide(color: Colors.blueAccent, width: 2),
       ),
     );
   }
 
   TextStyle _buttonTextStyle() {
     return TextStyle(
-      fontSize: 18, // Adjust the font size for better visibility
-      fontWeight: FontWeight.bold, // Bold font weight for emphasis
-      letterSpacing: 1.2, // Slight letter spacing for readability
-      color: Colors.white, // White text color
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.2,
+      color: Colors.white,
     );
   }
-
-  // Example Settings tab content
-  Widget _settingsTab() {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/sp.png'), // Background image
-          fit: BoxFit.fill,
-        ),
-      ),
-      child: Center(
-          // child: Text(
-          //   style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
-          // ),
-          ),
-    );
-  }
-
-  // Button style for reuse
-  // ButtonStyle _buttonStyle1() {
-  //   return ElevatedButton.styleFrom(
-  //     padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 45.h),
-  //     backgroundColor: Colors.black.withOpacity(0.8),
-  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-  //     shadowColor: Colors.black45,
-  //     elevation: 8,
-  //   );
-  // }
-
-  // Text style for button labels
-}
-
-// Sample screens for each button
-class Screen3 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return _basicScreen('Screen 3');
-  }
-}
-
-class Screen4 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return _basicScreen('Screen 4');
-  }
-}
-
-class Screen5 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return _basicScreen('Screen 5');
-  }
-}
-
-class Screen6 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return _basicScreen('Screen 6');
-  }
-}
-
-// Basic screen widget for each screen
-Widget _basicScreen(String title) {
-  return Scaffold(
-    appBar: AppBar(title: Text(title)),
-    body: Center(
-      child: Text(
-        'This is $title',
-        style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
-      ),
-    ),
-  );
 }
