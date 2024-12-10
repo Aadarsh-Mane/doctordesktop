@@ -1,10 +1,10 @@
-import 'package:doctordesktop/screens/Admin/AdminAuthDialog.dart';
+import 'package:doctordesktop/Admin/AdminAuthDialog.dart';
 import 'package:doctordesktop/screens/AssignDoctor.dart';
-import 'package:doctordesktop/screens/Doctor/fetchDoctor.dart';
+import 'package:doctordesktop/Doctor/fetchDoctor.dart';
 import 'package:doctordesktop/screens/DoctorRegister.dart';
 import 'package:doctordesktop/screens/ListPatienAssignToDoctor.dart';
 import 'package:doctordesktop/screens/NurseRegister.dart';
-import 'package:doctordesktop/screens/Patient/fetchPatient.dart';
+import 'package:doctordesktop/Patient/fetchPatient.dart';
 import 'package:doctordesktop/screens/PatientRegister.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
