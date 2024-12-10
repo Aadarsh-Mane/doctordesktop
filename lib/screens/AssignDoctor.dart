@@ -1,3 +1,4 @@
+import 'package:doctordesktop/constants/Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -30,8 +31,8 @@ class _AssignDoctorScreenState extends State<AssignDoctorScreen> {
   }
 
   Future<void> _fetchPatients() async {
-    final response = await http.get(Uri.parse(
-        'https://ai-healthcare-plum.vercel.app/reception/listPatients'));
+    final response =
+        await http.get(Uri.parse('${BASE_URL}/reception/listPatients'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
@@ -49,8 +50,8 @@ class _AssignDoctorScreenState extends State<AssignDoctorScreen> {
   }
 
   Future<void> _fetchDoctors() async {
-    final response = await http.get(Uri.parse(
-        'https://ai-healthcare-plum.vercel.app/reception/listDoctors'));
+    final response =
+        await http.get(Uri.parse('${BASE_URL}/reception/listDoctors'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
@@ -71,8 +72,7 @@ class _AssignDoctorScreenState extends State<AssignDoctorScreen> {
         _selectedDoctorId != null &&
         _selectedAdmissionId != null) {
       final response = await http.post(
-        Uri.parse(
-            'https://ai-healthcare-plum.vercel.app/reception/assign-Doctor'),
+        Uri.parse('${BASE_URL}/reception/assign-Doctor'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'patientId': _selectedPatientId,

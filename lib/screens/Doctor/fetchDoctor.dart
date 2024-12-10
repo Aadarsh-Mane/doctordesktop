@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:doctordesktop/constants/Url.dart';
 
 class DoctorListScreen extends StatefulWidget {
   @override
@@ -18,8 +19,8 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
   }
 
   Future<void> _fetchDoctors() async {
-    final response = await http.get(Uri.parse(
-        'https://ai-healthcare-plum.vercel.app/reception/listDoctors'));
+    final response =
+        await http.get(Uri.parse('${BASE_URL}/reception/listDoctors'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

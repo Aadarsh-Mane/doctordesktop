@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:doctordesktop/constants/Url.dart';
 
 class NurseRegisterScreen extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class _NurseRegisterScreenState extends State<NurseRegisterScreen> {
 
   Future<void> submitData() async {
     final url =
-        'https://ai-healthcare-plum.vercel.app/reception/addNurse'; // Replace with your backend URL
+        '${BASE_URL}/reception/addNurse'; // Replace with your backend URL
     try {
       final response = await http.post(
         Uri.parse(url),
