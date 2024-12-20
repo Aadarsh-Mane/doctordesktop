@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:dio/io.dart';
 import 'package:doctordesktop/authProvider/auth_provider.dart';
+import 'package:doctordesktop/constants/Url.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as path;
 
 import 'dart:async';
 
@@ -80,6 +82,7 @@ class LabPatientsScreen extends ConsumerWidget {
                                 icon: Icon(Icons.download),
                                 onPressed: () async {
                                   final url = report.reportUrl;
+
                                   await _downloadFile(url, context);
                                 },
                               ),
@@ -115,6 +118,7 @@ class LabPatientsScreen extends ConsumerWidget {
   }
 
   // Method to download file using Dio
+
   Future<void> _downloadFile(String url, BuildContext context) async {
     try {
       final dio = Dio();
@@ -130,6 +134,9 @@ class LabPatientsScreen extends ConsumerWidget {
         };
       }
 
+      // Convert Google Drive link to direct download link
+      String directDownloadUrl = _getGoogleDriveDirectDownloadUrl(url);
+
       // Get the app's document directory
       final directory =
           Directory('${Platform.environment['USERPROFILE']}\\Desktop\\reports');
@@ -138,13 +145,15 @@ class LabPatientsScreen extends ConsumerWidget {
             recursive: true); // Create the folder if it doesn't exist
       }
 
-      final fileName = url.split('/').last;
-      final savePath =
-          '${directory.path}\\$fileName'; // Save the file in the reports folder on Desktop
+      // Extract the file ID from the URL and generate a valid file name
+      String fileName = _getFileNameFromUrl(url);
 
-      await dio.download(url, savePath);
+      final savePath =
+          path.join(directory.path, fileName); // Safer path construction
+
+      // Download the file
+      await dio.download(directDownloadUrl, savePath);
       print('Download completed: $savePath');
-      ;
 
       // Show PDF in the same screen
       Navigator.push(
@@ -159,6 +168,27 @@ class LabPatientsScreen extends ConsumerWidget {
         SnackBar(content: Text('Error downloading file')),
       );
     }
+  }
+
+// Convert the Google Drive link to a direct download URL
+  String _getGoogleDriveDirectDownloadUrl(String url) {
+    final fileId = _extractFileIdFromUrl(url);
+    return 'https://drive.google.com/uc?export=download&id=$fileId';
+  }
+
+// Extract file ID from the Google Drive URL
+  String _extractFileIdFromUrl(String url) {
+    final match = RegExp(r'\/d\/([^\/]+)\/').firstMatch(url);
+    if (match != null) {
+      return match.group(1)!;
+    }
+    throw Exception('Unable to extract file ID from URL');
+  }
+
+// Generate a valid file name based on the file ID or use a default name
+  String _getFileNameFromUrl(String url) {
+    final fileId = _extractFileIdFromUrl(url);
+    return '$fileId.pdf'; // You can replace this with a more meaningful file name if available
   }
 }
 
@@ -214,7 +244,7 @@ class _UploadLabReportScreenState extends State<UploadLabReportScreen> {
     }
 
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://192.168.0.103:3000/labs/upload-lab-report'));
+        'POST', Uri.parse('${VERCEL_URL}/labs/upload-lab-report'));
     request.fields['admissionId'] = widget.admissionId;
     request.fields['patientId'] = widget.patientId;
     request.fields['labTestName'] = labTestName!;

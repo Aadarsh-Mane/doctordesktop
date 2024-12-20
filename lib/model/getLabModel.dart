@@ -17,11 +17,11 @@ class Patient {
 
   factory Patient.fromJson(Map<String, dynamic> json) {
     return Patient(
-      id: json['_id'],
-      name: json['name'],
-      age: json['age'],
-      gender: json['gender'],
-      contact: json['contact'],
+      id: json['_id'] ?? '', // Provide default empty string if null
+      name: json['name'] ?? '', // Provide default empty string if null
+      age: json['age'] ?? 0, // Provide default value 0 if null
+      gender: json['gender'] ?? '', // Provide default empty string if null
+      contact: json['contact'] ?? '', // Provide default empty string if null
     );
   }
 }
@@ -39,9 +39,10 @@ class Doctor {
 
   factory Doctor.fromJson(Map<String, dynamic> json) {
     return Doctor(
-      id: json['_id'],
-      email: json['email'],
-      doctorName: json['doctorName'],
+      id: json['_id'] ?? '', // Provide default empty string if null
+      email: json['email'] ?? '', // Provide default empty string if null
+      doctorName:
+          json['doctorName'] ?? '', // Provide default empty string if null
     );
   }
 }
@@ -63,11 +64,14 @@ class LabReport {
 
   factory LabReport.fromJson(Map<String, dynamic> json) {
     return LabReport(
-      labTestName: json['labTestName'],
-      reportUrl: json['reportUrl'],
-      labType: json['labType'],
-      uploadedAt: json['uploadedAt'],
-      id: json['_id'],
+      labTestName:
+          json['labTestName'] ?? '', // Provide default empty string if null
+      reportUrl:
+          json['reportUrl'] ?? '', // Provide default empty string if null
+      labType: json['labType'] ?? '', // Provide default empty string if null
+      uploadedAt:
+          json['uploadedAt'] ?? '', // Provide default empty string if null
+      id: json['_id'] ?? '', // Provide default empty string if null
     );
   }
 }
@@ -90,16 +94,21 @@ class LabPatient {
   });
 
   factory LabPatient.fromJson(Map<String, dynamic> json) {
-    var reportsJson = json['reports'] as List;
+    var reportsJson =
+        json['reports'] as List? ?? []; // Default to empty list if null
     List<LabReport> reportsList =
         reportsJson.map((i) => LabReport.fromJson(i)).toList();
 
     return LabPatient(
-      id: json['_id'],
-      admissionId: json['admissionId'],
-      patient: Patient.fromJson(json['patientId']),
-      doctor: Doctor.fromJson(json['doctorId']),
-      labTestNameGivenByDoctor: json['labTestNameGivenByDoctor'],
+      id: json['_id'] ?? '', // Provide default empty string if null
+      admissionId:
+          json['admissionId'] ?? '', // Provide default empty string if null
+      patient: Patient.fromJson(
+          json['patientId'] ?? {}), // Provide default empty map if null
+      doctor: Doctor.fromJson(
+          json['doctorId'] ?? {}), // Provide default empty map if null
+      labTestNameGivenByDoctor: json['labTestNameGivenByDoctor'] ??
+          '', // Provide default empty string if null
       reports: reportsList,
     );
   }
@@ -115,12 +124,13 @@ class LabPatientsResponse {
   });
 
   factory LabPatientsResponse.fromJson(Map<String, dynamic> json) {
-    var labReportsJson = json['labReports'] as List;
+    var labReportsJson =
+        json['labReports'] as List? ?? []; // Default to empty list if null
     List<LabPatient> labReportsList =
         labReportsJson.map((i) => LabPatient.fromJson(i)).toList();
 
     return LabPatientsResponse(
-      message: json['message'],
+      message: json['message'] ?? '', // Provide default empty string if null
       labReports: labReportsList,
     );
   }

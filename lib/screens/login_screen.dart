@@ -19,6 +19,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(
+                context); // This will pop the current screen and go back to the previous one
+          },
+        ),
+        title: Text("Login"),
+        backgroundColor: Colors.blue[900],
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -36,7 +47,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   backgroundColor: Colors.blue[100],
                   child: ClipOval(
                     child: Image.asset(
-                      'assets/images/spp.png', // Replace with hospital logo
+                      'assets/images/spanddd.jpeg', // Replace with hospital logo
                       fit: BoxFit.cover,
                       width: 140,
                       height: 140,

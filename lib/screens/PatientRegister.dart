@@ -31,7 +31,7 @@ class _PatientAddScreenState extends State<PatientAddScreen> {
       });
 
       final response = await http.post(
-        Uri.parse('${BASE_URL}/reception/addPatient'),
+        Uri.parse('${VERCEL_URL}/reception/addPatient'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': _nameController.text,
@@ -168,7 +168,7 @@ class _DoctorSelectionScreenState extends State<DoctorSelectionScreen> {
 
   Future<void> _fetchDoctors() async {
     final response =
-        await http.get(Uri.parse('${BASE_URL}/reception/listDoctors'));
+        await http.get(Uri.parse('${VERCEL_URL}/reception/listDoctors'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
@@ -192,7 +192,7 @@ class _DoctorSelectionScreenState extends State<DoctorSelectionScreen> {
 
   Future<void> _assignDoctor(String doctorId) async {
     final response = await http.post(
-      Uri.parse('${BASE_URL}/reception/assign-Doctor'),
+      Uri.parse('${VERCEL_URL}/reception/assign-Doctor'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'patientId': widget.patientId,

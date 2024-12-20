@@ -1,10 +1,16 @@
 import 'package:doctordesktop/Doctor/AssignedLabScreen.dart';
+import 'package:doctordesktop/Doctor/DoctorAdmittedPatientScreen.dart';
+import 'package:doctordesktop/Doctor/DoctorPatientDetailScreen.dart';
 import 'package:doctordesktop/Doctor/PatientDetailScreen.dart';
 import 'package:doctordesktop/StateProvider.dart';
 import 'package:doctordesktop/authProvider/auth_provider.dart';
 import 'package:doctordesktop/model/getNewPatientModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 
 final assignedPatientsProvider =
     StateNotifierProvider<AssignedPatientsNotifier, AsyncValue<List<Patient1>>>(
@@ -25,54 +31,116 @@ class AssignedPatientsScreen extends ConsumerStatefulWidget {
 
 class _AssignedPatientsScreenState
     extends ConsumerState<AssignedPatientsScreen> {
+  Timer? _refreshTimer;
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
+    // Initial manual refresh
     ref.refresh(assignedPatientsProvider.notifier).fetchAssignedPatients();
+    // Set up the timer to refresh every 1 minute (60 seconds)
+    _refreshTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      ref.refresh(assignedPatientsProvider.notifier).fetchAssignedPatients();
+    });
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timer when the screen is disposed to avoid memory leaks
+    _refreshTimer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2, // Number of tabs
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: IconButton(
+                icon: const Icon(Icons.refresh, color: Colors.black),
+                onPressed: () {
+                  // Refresh logic for assigned patients
+                  ref
+                      .refresh(assignedPatientsProvider.notifier)
+                      .fetchAssignedPatients();
+                },
+              ),
+            ),
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(19), // Adjust height of TabBar
+            child: Container(
+              color: Colors.black, // Background color for TabBar
+              child: const TabBar(
+                indicatorColor: Colors.cyan, // Tab selection indicator color
+                labelColor: Colors.cyan, // Active tab text/icon color
+                unselectedLabelColor:
+                    Colors.grey, // Inactive tab text/icon color
+                tabs: [
+                  Tab(
+                    icon: Icon(Icons.people),
+                    text: 'Assigned Patients',
+                  ),
+                  Tab(
+                    icon: Icon(Icons.people_outline_rounded),
+                    text: 'Admitted Patient',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        body: const TabBarView(
+          children: [
+            AssignedPatientsView(),
+            AdmittedPatientsScreen(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AssignedPatientsView extends ConsumerWidget {
+  const AssignedPatientsView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final assignedPatients = ref.watch(assignedPatientsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurpleAccent,
-        title: const Text('Assigned Patients',
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: () {
-              ref
-                  .refresh(assignedPatientsProvider.notifier)
-                  .fetchAssignedPatients();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.assignment, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AssignedLabsScreen(),
-                ),
-              );
-            },
-          ),
-        ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.pop(context); // Go back to the previous screen
+          },
+        ),
       ),
+
+      backgroundColor: Colors.white, // Light background for the entire list
       body: assignedPatients.when(
         data: (patients) => ListView.builder(
           itemCount: patients.length,
           itemBuilder: (context, index) {
             final patient = patients[index];
+            final admissionStatus = patient.admissionRecords.isNotEmpty
+                ? patient.admissionRecords.first.status
+                : 'Pending';
+
+            // Set status color based on the admission status
+            Color statusColor =
+                admissionStatus == 'admitted' ? Colors.green : Colors.red;
+
             return Dismissible(
               key: Key(patient.id),
-              direction: DismissDirection.endToStart,
+              direction: DismissDirection.startToEnd,
               onDismissed: (direction) async {
                 bool? shouldDischarge =
                     await _showDischargeConfirmationDialog(context);
@@ -106,32 +174,111 @@ class _AssignedPatientsScreenState
                 ),
               ),
               child: Card(
-                elevation: 4.0,
+                color: Colors.white, // Black background for the card
+                elevation: 8.0, // Add shadow for the card
                 margin:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
+                  side: const BorderSide(
+                    color: Colors.cyan, // Cyan border for the card
+                    width: 2.0,
+                  ),
                 ),
                 child: ListTile(
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  leading: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.cyan, // Cyan background for avatar
+                    child: Text(
+                      patient.name[0].toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black, // Black text inside the avatar
+                      ),
+                    ),
+                  ),
                   title: Text(
                     patient.name,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.cyan, // Cyan color for the title
+                    ),
                   ),
-                  subtitle: Text(
-                    'Age: ${patient.age}, Gender: ${patient.gender}',
-                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Age: ${patient.age}, Gender: ${patient.gender}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.cyan, // Cyan color for the subtitle
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Status: $admissionStatus',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: statusColor, // Status-specific color
+                        ),
+                      ),
+                    ],
                   ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.assignment_late,
-                        color: Colors.deepPurple),
-                    onPressed: () async {
-                      await _handleAssignLab(context, patient, ref);
-                    },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // First Icon (Assign to Lab)
+                      // IconButton(
+                      //   icon: const Icon(
+                      //     Icons.assignment_late,
+                      //     color: Colors.cyan,
+                      //     size: 28, // Larger icon size
+                      //   ),
+                      //   onPressed: () async {
+                      //     await _handleAssignLab(context, patient, ref);
+                      //   },
+                      // ),
+                      // Second Icon (Admit Patient)
+                      // IconButton(
+                      //   icon: const Icon(
+                      //     Icons.person_add,
+                      //     color: Colors.cyan,
+                      //     size: 28, // Larger icon size
+                      //   ),
+                      //   onPressed: () async {
+                      //     await _admitPatient(patient, ref, context);
+                      //   },
+                      // ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          await _admitPatient(patient, ref, context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Colors.green, // Cyan background color
+                          foregroundColor: Colors.white, // White text color
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(8), // Rounded corners
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8), // Padding for better appearance
+                        ),
+                        child: const Text(
+                          "Assign to Lab",
+                          style: TextStyle(
+                            fontWeight:
+                                FontWeight.bold, // Bold text for emphasis
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   onTap: () {
                     Navigator.push(
@@ -149,113 +296,184 @@ class _AssignedPatientsScreenState
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
-          child: Text('Error: $error', style: TextStyle(color: Colors.red)),
+          child: Text(
+            'Error: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Trigger the refresh when the button is pressed
+          ref.refresh(assignedPatientsProvider);
+        },
+        child: const Icon(Icons.refresh),
+        backgroundColor: Colors.cyan, // Cyan background for the button
       ),
     );
   }
+}
 
-  Future<bool?> _showDischargeConfirmationDialog(BuildContext context) async {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Confirm Discharge',
-              style: TextStyle(color: Colors.deepPurple)),
-          content: const Text(
-              'Are you sure you want to discharge this patient?',
-              style: TextStyle(fontSize: 16)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Discharge',
-                  style: TextStyle(color: Colors.deepPurple)),
-            ),
-          ],
-        );
-      },
+class OtherScreenView extends StatelessWidget {
+  const OtherScreenView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'This is the other screen',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
     );
   }
+}
 
-  Future<void> _dischargePatient(Patient1 patient, WidgetRef ref) async {
-    try {
-      final admissionId = patient.admissionRecords.isNotEmpty
-          ? patient.admissionRecords.first.id
-          : '';
-      final authRepository = ref.read(authRepositoryProvider);
-      final result = await authRepository.dischargePatient(
-        patientId: patient.patientId,
-        admissionId: admissionId,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message']),
-          backgroundColor: result['success'] ? Colors.green : Colors.red,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-
-      ref.refresh(assignedPatientsProvider.notifier).fetchAssignedPatients();
-    } catch (e) {
-      print('Error discharging patient: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error discharging patient: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+Future<void> _admitPatient(
+    Patient1 patient, WidgetRef ref, BuildContext context) async {
+  try {
+    // Assuming the first admission record's ID is used as the admissionId
+    if (patient.admissionRecords.isEmpty) {
+      throw Exception('No admission records found for this patient.');
     }
-  }
 
-  Future<void> _handleAssignLab(
-      BuildContext context, Patient1 patient, WidgetRef ref) async {
+    final admissionId = patient.admissionRecords.first
+        .id; // Adjust logic if not using the first record
+
     final authRepository = ref.read(authRepositoryProvider);
-    final admissionId = await showDialog<String>(
-      context: context,
-      builder: (context) => SelectAdmissionDialog(
-        admissionRecords: patient.admissionRecords,
+    final result = await authRepository.admitPatient1(
+      admissionId: admissionId,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message'] ?? 'Unknown error occurred.'),
+        backgroundColor:
+            (result['success'] as bool? ?? false) ? Colors.green : Colors.red,
+      ),
+    );
+    ;
+
+    ref.refresh(assignedPatientsProvider.notifier).fetchAssignedPatients();
+  } catch (e) {
+    print(e);
+    String errorMessage = 'Failed to admit patient';
+
+    // If the error is a Map (e.g., JSON), parse it
+    if (e is Map) {
+      errorMessage = e['message'] ?? 'Unknown error occurred';
+    } else if (e is String) {
+      // If it's a string, use it directly
+      errorMessage = e;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Patient already admitted '),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+Future<bool?> _showDischargeConfirmationDialog(BuildContext context) async {
+  return showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Confirm Discharge',
+            style: TextStyle(color: Colors.deepPurple)),
+        content: const Text('Are you sure you want to discharge this patient?',
+            style: TextStyle(fontSize: 16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Discharge',
+                style: TextStyle(color: Colors.deepPurple)),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _dischargePatient(Patient1 patient, WidgetRef ref) async {
+  try {
+    final admissionId = patient.admissionRecords.isNotEmpty
+        ? patient.admissionRecords.first.id
+        : '';
+    final authRepository = ref.read(authRepositoryProvider);
+    final result = await authRepository.dischargePatient(
+      patientId: patient.patientId,
+      admissionId: admissionId,
+    );
+    print("the admission id is ${admissionId}");
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text(result['message'] ?? 'Unknown error occurred.'),
+    //     backgroundColor:
+    //         (result['success'] as bool? ?? false) ? Colors.green : Colors.red,
+    //   ),
+    // );
+    ;
+
+    ref.refresh(assignedPatientsProvider.notifier).fetchAssignedPatients();
+  } catch (e) {
+    print('Error discharging patient: $e');
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text('Error discharging patient: $e'),
+    //     backgroundColor: Colors.red,
+    //   ),
+    // );
+  }
+}
+
+Future<void> _handleAssignLab(
+    BuildContext context, Patient1 patient, WidgetRef ref) async {
+  final authRepository = ref.read(authRepositoryProvider);
+  final admissionId = await showDialog<String>(
+    context: context,
+    builder: (context) => SelectAdmissionDialog(
+      admissionRecords: patient.admissionRecords,
+    ),
+  );
+
+  if (admissionId == null) return;
+
+  final labTestNameGivenByDoctor = await showDialog<String>(
+    context: context,
+    builder: (context) => AssignLabDialog(),
+  );
+
+  if (labTestNameGivenByDoctor == null || labTestNameGivenByDoctor.isEmpty) {
+    return;
+  }
+
+  try {
+    final result = await authRepository.assignPatientToLab(
+      patientId: patient.id,
+      admissionId: admissionId,
+      labTestNameGivenByDoctor: labTestNameGivenByDoctor,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message']),
+        backgroundColor: result['success'] ? Colors.green : Colors.red,
       ),
     );
 
-    if (admissionId == null) return;
-
-    final labTestNameGivenByDoctor = await showDialog<String>(
-      context: context,
-      builder: (context) => AssignLabDialog(),
+    ref.refresh(assignedPatientsProvider.notifier).fetchAssignedPatients();
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to assign lab: $e'),
+        backgroundColor: Colors.red,
+      ),
     );
-
-    if (labTestNameGivenByDoctor == null || labTestNameGivenByDoctor.isEmpty) {
-      return;
-    }
-
-    try {
-      final result = await authRepository.assignPatientToLab(
-        patientId: patient.id,
-        admissionId: admissionId,
-        labTestNameGivenByDoctor: labTestNameGivenByDoctor,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message']),
-          backgroundColor: result['success'] ? Colors.green : Colors.red,
-        ),
-      );
-
-      ref.refresh(assignedPatientsProvider.notifier).fetchAssignedPatients();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to assign lab: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
   }
 }
 

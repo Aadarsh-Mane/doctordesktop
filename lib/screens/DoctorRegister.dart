@@ -20,7 +20,7 @@ class _DoctorRegisterScreenState extends State<DoctorRegisterScreen> {
 
   Future<void> submitData() async {
     final url =
-        '${BASE_URL}/reception/addDoctor'; // Replace with your backend URL
+        '${VERCEL_URL}/reception/addDoctor'; // Replace with your backend URL
     try {
       final response = await http.post(
         Uri.parse(url),

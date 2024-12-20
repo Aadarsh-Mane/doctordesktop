@@ -197,8 +197,8 @@ class _HomeScreenState extends State<HomeScreen>
             },
           ),
           ListTile(
-            leading: Icon(Icons.info),
-            title: Text('About'),
+            leading: Icon(Icons.login_outlined),
+            title: Text('Doctor Login'),
             onTap: () {
               // Add functionality if needed
               Navigator.push(
@@ -301,64 +301,69 @@ class _HomeScreenState extends State<HomeScreen>
           fit: BoxFit.fill,
         ),
       ),
-      child: Center(
-        child: Wrap(
-          spacing: 30.w,
-          runSpacing: 30.h,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PatientListScreen()),
-                );
-              },
-              style: _buttonStyle(),
-              child: Text('Get Patient', style: _buttonTextStyle()),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DoctorListScreen()),
-                );
-              },
-              style: _buttonStyle(),
-              child: Text('Get Doctor', style: _buttonTextStyle()),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AssignDoctorScreen()),
-                );
-              },
-              style: _buttonStyle(),
-              child: Text('Assign Doctor', style: _buttonTextStyle()),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PatientAssignmentScreen()),
-                );
-              },
-              style: _buttonStyle(),
-              child: Text('Doctor Patient', style: _buttonTextStyle()),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DischargedPatientsScreen()),
-                );
-              },
-              style: _buttonStyle(),
-              child: Text('gen', style: _buttonTextStyle()),
-            ),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.only(top: 83.0),
+        child: Center(
+          child: Wrap(
+            spacing: 40.w,
+            runSpacing: 30.h,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PatientListScreen()),
+                  );
+                },
+                style: _buttonStyle(),
+                child: Text('Get Patient', style: _buttonTextStyle()),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DoctorListScreen()),
+                  );
+                },
+                style: _buttonStyle(),
+                child: Text('Get Doctor', style: _buttonTextStyle()),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AssignDoctorScreen()),
+                  );
+                },
+                style: _buttonStyle(),
+                child: Text('Assign Doctor', style: _buttonTextStyle()),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PatientAssignmentScreen()),
+                  );
+                },
+                style: _buttonStyle(),
+                child: Text('Doctor Patient', style: _buttonTextStyle()),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DischargedPatientsScreen()),
+                  );
+                },
+                style: _buttonStyle(),
+                child: Text('Discharged Patient', style: _buttonTextStyle()),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -50,6 +50,10 @@ class _DoctorHomeScreenState extends ConsumerState<DoctorHomeScreen> {
           child: IconButton(
             icon: Icon(Icons.home),
             onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
               print("Settings button pressed");
             },
           ),
@@ -242,8 +246,7 @@ class _DoctorHomeScreenState extends ConsumerState<DoctorHomeScreen> {
         duration: Duration(milliseconds: 300),
         padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
         decoration: BoxDecoration(
-          color:
-              isHovered ? Colors.cyan : Colors.black, // Change color on hover
+          color: isHovered ? Colors.cyan : Colors.cyan, // Change color on hover
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -256,11 +259,11 @@ class _DoctorHomeScreenState extends ConsumerState<DoctorHomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 24, color: Colors.white),
+            Icon(icon, size: 24, color: Colors.black),
             const SizedBox(width: 10),
             Text(
               label,
-              style: TextStyle(fontSize: 18, color: Colors.white),
+              style: TextStyle(fontSize: 18, color: Colors.black),
             ),
           ],
         ),

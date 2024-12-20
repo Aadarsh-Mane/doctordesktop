@@ -132,6 +132,9 @@ class AdmissionRecord {
   final String id;
   final String admissionDate;
   final String reasonForAdmission;
+  final String status;
+  final List<String> doctorPrescrption;
+
   final String symptoms;
   final String initialDiagnosis;
   final List<dynamic> reports;
@@ -142,6 +145,9 @@ class AdmissionRecord {
     required this.admissionDate,
     required this.reasonForAdmission,
     required this.symptoms,
+    required this.status,
+    required this.doctorPrescrption, // Default to empty list if missing
+
     required this.initialDiagnosis,
     required this.reports,
     required this.followUps,
@@ -153,7 +159,9 @@ class AdmissionRecord {
       admissionDate: json['admissionDate'],
       reasonForAdmission: json['reasonForAdmission'],
       symptoms: json['symptoms'],
+      status: json['status'] ?? '' as String,
       initialDiagnosis: json['initialDiagnosis'],
+      doctorPrescrption: List<String>.from(json['doctorPrescrption'] ?? []),
       reports: json['reports'] ?? [],
       followUps: (json['followUps'] as List<dynamic>)
           .map((e) => FollowUp.fromJson(e))

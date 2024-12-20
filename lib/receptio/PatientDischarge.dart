@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:doctordesktop/constants/Url.dart';
 import 'package:doctordesktop/model/getPatientHistory.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -19,8 +20,8 @@ class _DischargedPatientsScreenState extends State<DischargedPatientsScreen> {
 
   // Function to fetch the data from the API
   Future<void> fetchDischargedPatients() async {
-    final response = await http.get(
-        Uri.parse('http://192.168.0.103:3000/doctors/getdischargedPatient'));
+    final response =
+        await http.get(Uri.parse('${VERCEL_URL}/doctors/getdischargedPatient'));
 
     if (response.statusCode == 200) {
       // Parse the response and update the state
@@ -49,7 +50,7 @@ class _DischargedPatientsScreenState extends State<DischargedPatientsScreen> {
   ) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.0.103:3000/generateDischargeSummary'),
+        Uri.parse('${VERCEL_URL}/generateDischargeSummary'),
         body: {
           'patientId': patientId,
           'name': name,

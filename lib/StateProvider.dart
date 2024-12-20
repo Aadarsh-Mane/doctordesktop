@@ -1,4 +1,5 @@
 import 'package:doctordesktop/authRepository/auth_repository.dart';
+import 'package:doctordesktop/constants/Url.dart';
 import 'package:doctordesktop/model/getDoctorProfile.dart';
 import 'package:doctordesktop/model/getLabModel.dart';
 import 'package:doctordesktop/model/getLabPatient.dart';
@@ -81,8 +82,8 @@ class LabPatientsNotifier extends StateNotifier<List<LabPatient>> {
   LabPatientsNotifier() : super([]);
 
   Future<void> fetchLabPatients() async {
-    final response = await http
-        .get(Uri.parse('http://192.168.0.103:3000/labs/getlabPatients'));
+    final response =
+        await http.get(Uri.parse('${VERCEL_URL}/labs/getlabPatients'));
     print(response.body);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -91,5 +92,37 @@ class LabPatientsNotifier extends StateNotifier<List<LabPatient>> {
     } else {
       throw Exception('Failed to load lab patients');
     }
+  }
+}
+
+class AdmittedPatientsNotifier
+    extends StateNotifier<AsyncValue<List<Patient1>>> {
+  final AuthRepository authRepository;
+
+  AdmittedPatientsNotifier(this.authRepository)
+      : super(const AsyncValue.loading());
+
+  // Fetch assigned patients
+  Future<void> fetchAdmittedPatients() async {
+    try {
+      state = const AsyncValue.loading(); // Show loading state
+      final patients = await authRepository.getAdmittedPatients();
+      state = AsyncValue.data(patients); // Set fetched data
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace); // Set error state
+    }
+  }
+
+  // Refresh assigned patients (same as fetch but allows external trigger)
+  Future<void> refreshPatients() async {
+    await fetchAdmittedPatients();
+  }
+
+  void removePatient(Patient1 patient) {
+    state.whenData((patients) {
+      final updatedPatients = List<Patient1>.from(patients)
+        ..removeWhere((item) => item.id == patient.id); // Remove the patient
+      state = AsyncValue.data(updatedPatients); // Update the state
+    });
   }
 }

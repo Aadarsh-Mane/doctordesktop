@@ -22,7 +22,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
   Future<void> _fetchPatients() async {
     try {
       final response =
-          await http.get(Uri.parse('${BASE_URL}/reception/listPatients'));
+          await http.get(Uri.parse('${VERCEL_URL}/reception/listPatients'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
