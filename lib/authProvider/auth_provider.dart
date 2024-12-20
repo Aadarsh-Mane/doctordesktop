@@ -2,6 +2,7 @@ import 'package:doctordesktop/Provider.dart';
 import 'package:doctordesktop/StateProvider.dart';
 import 'package:doctordesktop/authRepository/auth_repository.dart';
 import 'package:doctordesktop/model/getDoctorProfile.dart';
+import 'package:doctordesktop/model/getLabModel.dart';
 import 'package:doctordesktop/model/getNewPatientModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -114,7 +115,10 @@ final assignedPatientsProvider = FutureProvider<List<Patient1>>((ref) async {
   final authRepository = ref.read(authRepositoryProvider);
   return await authRepository.getAssignedPatients();
 });
-
+final labPatientsProvider =
+    StateNotifierProvider<LabPatientsNotifier, List<LabPatient>>((ref) {
+  return LabPatientsNotifier();
+});
 // final assignedLabsProvider = FutureProvider<List<AssignedLab>>((ref) async {
 //   final authRepository = ref.read(authRepositoryProvider);
 //   return await authRepository.getAssignedLabs();

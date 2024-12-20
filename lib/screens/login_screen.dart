@@ -1,3 +1,4 @@
+import 'package:doctordesktop/Doctor/DoctorMainScreen.dart';
 import 'package:doctordesktop/authProvider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,13 +11,11 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  String selectedUsertype = 'nurse'; // Default to nurse
 
   @override
   Widget build(BuildContext context) {
     final authController = ref.read(authControllerProvider.notifier);
-    final mediaQuery = MediaQuery.of(context);
-    final isPortrait = mediaQuery.orientation == Orientation.portrait;
+    final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -24,33 +23,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: isPortrait ? 24.0 : 48.0,
-              vertical: isPortrait ? 40.0 : 20.0,
+              horizontal: screenSize.width * 0.2,
+              vertical: screenSize.height * 0.1,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Circular image above the login form
+                // Hospital logo
                 CircleAvatar(
-                  radius: 60,
+                  radius: 80,
                   backgroundColor: Colors.blue[100],
                   child: ClipOval(
                     child: Image.asset(
                       'assets/images/spp.png', // Replace with hospital logo
                       fit: BoxFit.cover,
-                      width: 100,
-                      height: 100,
+                      width: 140,
+                      height: 140,
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 30),
                 // Welcome text
                 Text(
                   "Welcome to Spandan Hospital",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: isPortrait ? 24 : 28,
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Colors.blue[900],
                   ),
@@ -60,36 +59,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   "Please login to continue",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: isPortrait ? 16 : 18,
+                    fontSize: 18,
                     color: Colors.grey[700],
                   ),
                 ),
-                SizedBox(height: 30),
-                // User type dropdown
-                DropdownButtonFormField<String>(
-                  value: selectedUsertype,
-                  decoration: InputDecoration(
-                    labelText: "Select User Type",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  items: ['doctor', 'nurse'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value[0].toUpperCase() +
-                            value.substring(1), // Capitalize
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      selectedUsertype = newValue!;
-                    });
-                  },
-                ),
-                SizedBox(height: 20),
+                SizedBox(height: 40),
                 // Email field
                 TextField(
                   controller: emailController,
@@ -122,24 +96,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       await authController.login(
                         emailController.text,
                         passwordController.text,
-                        selectedUsertype,
+                        "doctor", // User type is fixed to doctor
                       );
 
-                      // Navigate based on user type
-                      final usertype = await authController.getUsertype();
-                      if (usertype == 'doctor') {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DoctorMainScreen()),
-                        );
-                      } else if (usertype == 'nurse') {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => NurseMainScreen()),
-                        );
-                      }
+                      // Navigate to Doctor's Dashboard
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DoctorMainScreen(),
+                        ),
+                      );
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -149,7 +115,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 40),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -159,8 +125,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
-                SizedBox(height: 40),
-                // Footer with branding
+                SizedBox(height: 50),
+                // Footer branding
                 Column(
                   children: [
                     Text(
@@ -171,7 +137,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         color: Colors.grey[600],
                       ),
                     ),
-                    SizedBox(height: 5),
+                    SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -180,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           color: Colors.blue[800],
                           size: 28,
                         ),
-                        SizedBox(width: 8),
+                        SizedBox(width: 10),
                         Text(
                           "20s Developers",
                           style: TextStyle(

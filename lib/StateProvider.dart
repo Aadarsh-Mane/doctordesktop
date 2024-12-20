@@ -1,7 +1,13 @@
 import 'package:doctordesktop/authRepository/auth_repository.dart';
 import 'package:doctordesktop/model/getDoctorProfile.dart';
+import 'package:doctordesktop/model/getLabModel.dart';
 import 'package:doctordesktop/model/getLabPatient.dart';
+import 'package:doctordesktop/model/getNewPatientModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:convert';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 class AssignedLabsNotifier extends StateNotifier<List<AssignedLab>> {
   final AuthRepository authRepository;
@@ -35,6 +41,55 @@ class DoctorProfileNotifier extends StateNotifier<DoctorProfile?> {
       state = doctorProfile; // Update the state with fetched data
     } catch (e) {
       throw Exception('Failed to fetch doctor profile: $e');
+    }
+  }
+}
+
+class AssignedPatientsNotifier
+    extends StateNotifier<AsyncValue<List<Patient1>>> {
+  final AuthRepository authRepository;
+
+  AssignedPatientsNotifier(this.authRepository)
+      : super(const AsyncValue.loading());
+
+  // Fetch assigned patients
+  Future<void> fetchAssignedPatients() async {
+    try {
+      state = const AsyncValue.loading(); // Show loading state
+      final patients = await authRepository.getAssignedPatients();
+      state = AsyncValue.data(patients); // Set fetched data
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace); // Set error state
+    }
+  }
+
+  // Refresh assigned patients (same as fetch but allows external trigger)
+  Future<void> refreshPatients() async {
+    await fetchAssignedPatients();
+  }
+
+  void removePatient(Patient1 patient) {
+    state.whenData((patients) {
+      final updatedPatients = List<Patient1>.from(patients)
+        ..removeWhere((item) => item.id == patient.id); // Remove the patient
+      state = AsyncValue.data(updatedPatients); // Update the state
+    });
+  }
+}
+
+class LabPatientsNotifier extends StateNotifier<List<LabPatient>> {
+  LabPatientsNotifier() : super([]);
+
+  Future<void> fetchLabPatients() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.0.103:3000/labs/getlabPatients'));
+    print(response.body);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final labPatientsResponse = LabPatientsResponse.fromJson(data);
+      state = labPatientsResponse.labReports; // Update the state
+    } else {
+      throw Exception('Failed to load lab patients');
     }
   }
 }

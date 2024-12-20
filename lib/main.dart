@@ -1,4 +1,8 @@
 import 'package:doctordesktop/Admin/AdminAuthDialog.dart';
+import 'package:doctordesktop/LabScreen.dart';
+import 'package:doctordesktop/Working.dart';
+import 'package:doctordesktop/model/getPatientHistory.dart';
+import 'package:doctordesktop/receptio/PatientDischarge.dart';
 import 'package:doctordesktop/screens/AssignDoctor.dart';
 import 'package:doctordesktop/Doctor/fetchDoctor.dart';
 import 'package:doctordesktop/screens/DoctorRegister.dart';
@@ -6,12 +10,16 @@ import 'package:doctordesktop/screens/ListPatienAssignToDoctor.dart';
 import 'package:doctordesktop/screens/NurseRegister.dart';
 import 'package:doctordesktop/Patient/fetchPatient.dart';
 import 'package:doctordesktop/screens/PatientRegister.dart';
+import 'package:doctordesktop/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -193,6 +201,21 @@ class _HomeScreenState extends State<HomeScreen>
             title: Text('About'),
             onTap: () {
               // Add functionality if needed
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Doct()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.info),
+            title: Text('Lab '),
+            onTap: () {
+              // Add functionality if needed
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LabPatientsScreen()),
+              );
             },
           ),
         ],
@@ -323,6 +346,17 @@ class _HomeScreenState extends State<HomeScreen>
               },
               style: _buttonStyle(),
               child: Text('Doctor Patient', style: _buttonTextStyle()),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DischargedPatientsScreen()),
+                );
+              },
+              style: _buttonStyle(),
+              child: Text('gen', style: _buttonTextStyle()),
             ),
           ],
         ),
