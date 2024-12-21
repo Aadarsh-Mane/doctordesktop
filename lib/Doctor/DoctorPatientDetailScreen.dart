@@ -161,7 +161,7 @@ class _PatientDetailScreen2State extends State<PatientDetailScreen4> {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'Spandan Hospital',
+                  'Tambe Hospital',
                   style: pw.TextStyle(
                     fontSize: 28,
                     fontWeight: pw.FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:doctordesktop/Admin/AdminAuthDialog.dart';
+import 'package:doctordesktop/Lab/LabAuthDialog.dart';
 import 'package:doctordesktop/LabScreen.dart';
 import 'package:doctordesktop/Working.dart';
 import 'package:doctordesktop/model/getPatientHistory.dart';
@@ -68,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: Text(
-          'Spandan Hospital',
+          'Tambe Hospital',
           style: TextStyle(
             color: Colors.white,
           ),
@@ -115,21 +116,22 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           ListTile(
             leading: Icon(Icons.person_add),
-            title: Text('Register Doctor'),
+            title: Text('Doctor Login'),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DoctorRegisterScreen()),
+                MaterialPageRoute(builder: (context) => Doct()),
               );
             },
           ),
           ListTile(
             leading: Icon(Icons.person_add_alt),
-            title: Text('Register Nurse'),
+            title: Text('Lab Login'),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NurseRegisterScreen()),
+              // Add functionality if needed
+              showDialog(
+                context: context,
+                builder: (context) => LabAuthDialog(),
               );
             },
           ),
@@ -212,9 +214,9 @@ class _HomeScreenState extends State<HomeScreen>
             title: Text('Lab '),
             onTap: () {
               // Add functionality if needed
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LabPatientsScreen()),
+              showDialog(
+                context: context,
+                builder: (context) => LabAuthDialog(),
               );
             },
           ),
@@ -229,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen>
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/images/span.png'),
+              image: AssetImage('assets/images/tam.png'),
               fit: BoxFit.fill,
             ),
           ),
@@ -253,36 +255,35 @@ class _HomeScreenState extends State<HomeScreen>
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DoctorRegisterScreen()),
+                      // Add functionality if needed
+                      showDialog(
+                        context: context,
+                        builder: (context) => AdminAuthDialog(),
                       );
                     },
                     style: _buttonStyle(),
-                    child: Text('Register Doctor', style: _buttonTextStyle()),
+                    child: Text('Reception Login', style: _buttonTextStyle()),
                   ),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => NurseRegisterScreen()),
+                        MaterialPageRoute(builder: (context) => Doct()),
                       );
                     },
                     style: _buttonStyle(),
-                    child: Text('Nurse Register', style: _buttonTextStyle()),
+                    child: Text('Doctor Login ', style: _buttonTextStyle()),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PatientAddScreen()),
+                      // Add functionality if needed
+                      showDialog(
+                        context: context,
+                        builder: (context) => LabAuthDialog(),
                       );
                     },
                     style: _buttonStyle(),
-                    child: Text('Patient Register', style: _buttonTextStyle()),
+                    child: Text('Lab Login', style: _buttonTextStyle()),
                   ),
                 ],
               ),

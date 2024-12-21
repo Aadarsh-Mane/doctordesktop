@@ -64,7 +64,7 @@ class _DoctorHomeScreenState extends ConsumerState<DoctorHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Spandan's Doctor Portal,",
+                "Tambe's Doctor Portal,",
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
